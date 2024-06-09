@@ -90,7 +90,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     {
         //Act
         var person = dbContext.People.First();
-        var name = person.FirstName.Substring(0, 2);
+        var name = person.FirstName[..2];
         var age = person.Age;
         List<FilterCondition> filters =
         [
@@ -103,7 +103,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
         var result = dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.FirstName.Contains(name) && p.Age >= age).ToList();
+        var expected = dbContext.People.Where(p => p.FirstName.Contains(name, StringComparison.OrdinalIgnoreCase) && p.Age >= age).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -146,6 +146,40 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Assert
         var expected = dbContext.People.Where(p => p.FirstName == name).ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Filter_NonExistentProperty_ThrowsArgumentException()
+    {
+        //Arrange
+        List<FilterCondition> filters =
+        [
+            new("NonExistentProperty", "value", FilterOperator.Equal)
+        ];
+
+        //Act
+        void Act() => QueryBuilder.BuildQuery<PersonEntity>(filters);
+
+        //Assert
+        Assert.Throws<ArgumentException>(Act);
+    }
+
+    [Fact]
+    public void Filter_BooleanProperty()
+    {
+        //Arrange
+        List<FilterCondition> filters = [
+            new(nameof(PersonEntity.IsEmployed), "true", FilterOperator.Equal)
+        ];
+
+        //Act
+        var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
+        var result = dbContext.People.Where(query).ToList();
+
+        //Assert
+        var expected = dbContext.People.Where(p => p.IsEmployed).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }

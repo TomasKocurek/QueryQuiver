@@ -1,6 +1,6 @@
-﻿using QueryQuiver.Tests.Fixtures;
+﻿using QueryQuiver.Tests.Extensions;
+using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
-using QueryQuiver.Tests.Models;
 
 namespace QueryQuiver.Tests;
 
@@ -19,11 +19,77 @@ public class PaginationTests(DbContextFixture dbContextFixture)
         var result = dbContext.People.ApplyFilters(rawFilters).ToList();
 
         //Assert
-        var expected = GetPaginatedPeople(0, 20);
+        var expected = dbContext.People
+            .ApplyPagination(0, 20)
+            .ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
 
-    private List<PersonEntity> GetPaginatedPeople(int page, int pageSize)
-        => [.. dbContext.People.Take(pageSize).Skip(page * pageSize)];
+    [Fact]
+    public void Paginate_WithPagination()
+    {
+        //Arrange
+        Dictionary<string, string[]> rawFilters = new()
+        {
+            { "page", ["1"] },
+            { "pageSize", ["10"] }
+        };
+
+        //Act
+        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+
+        //Assert
+        var expected = dbContext.People
+            .ApplyPagination(1, 10)
+            .ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Paginate_WithPaginationAndDescSort()
+    {
+        //Arrange
+        Dictionary<string, string[]> rawFilters = new()
+        {
+            { "page", ["1"] },
+            { "pageSize", ["10"] },
+            { "sort", ["LastName:desc"] }
+        };
+
+        //Act
+        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+
+        //Assert
+        var expected = dbContext.People
+            .OrderByDescending(p => p.LastName)
+            .ApplyPagination(1, 10)
+            .ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Paginate_WithPaginationAndAscSort()
+    {
+        //Arrange
+        Dictionary<string, string[]> rawFilters = new()
+        {
+            { "page", ["3"] },
+            { "pageSize", ["30"] },
+            { "sort", ["Age:asc"] }
+        };
+
+        //Act
+        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+
+        //Assert
+        var expected = dbContext.People
+            .OrderBy(p => p.Age)
+            .ApplyPagination(3, 30)
+            .ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
 }

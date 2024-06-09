@@ -11,6 +11,7 @@ internal static class PeopleMock
             .RuleFor(p => p.LastName, f => f.Person.LastName)
             .RuleFor(p => p.Age, f => f.Random.Number(18, 99))
             .RuleFor(p => p.Email, f => f.Person.Email)
+            .RuleFor(p => p.IsEmployed, f => f.Random.Bool())
             .Generate(count);
     }
 }

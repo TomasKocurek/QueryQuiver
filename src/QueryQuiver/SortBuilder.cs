@@ -4,13 +4,14 @@ using System.Linq.Expressions;
 namespace QueryQuiver;
 public static class SortBuilder
 {
-    public static Expression<Func<T, bool>> CreateProperty<T>(SortItem? sortItem)
+    public static Expression<Func<T, object>>? CreateSortProperty<T>(SortItem? sortItem)
     {
         if (sortItem is null)
-            return _ => true;
+            return null;
 
         var parameter = Expression.Parameter(typeof(T), nameof(T));
         var property = Expression.Property(parameter, sortItem.PropertyName);
-        return Expression.Lambda<Func<T, bool>>(property!, parameter);
+        var convert = Expression.Convert(property, typeof(object));
+        return Expression.Lambda<Func<T, object>>(convert, parameter);
     }
 }
