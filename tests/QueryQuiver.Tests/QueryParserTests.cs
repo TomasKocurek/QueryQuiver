@@ -24,10 +24,10 @@ public class QueryParserTests
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
         {
-            {"offset", new string[] {"10"}},
-            {"limit", new string[] {"30"}},
-            {"sort", new string[] {"column:desc"}},
-            {"column", new string[] {"eq:value"}}
+            {"page", ["10"]},
+            {"pageSize", ["30"]},
+            {"sort", ["column:desc"]},
+            {"column", ["eq:value"]}
         };
 
         //Act
@@ -44,7 +44,7 @@ public class QueryParserTests
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
         {
-            {"column", new string[] {"invalid:value"}}
+            {"column", ["invalid:value"]}
         };
 
         //Act
@@ -60,8 +60,8 @@ public class QueryParserTests
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
         {
-            {"column1", new string[] {"eq:value1"}},
-            {"column2", new string[] {"ne:value2"}}
+            {"column1", ["eq:value1"]},
+            {"column2", ["ne:value2"]}
         };
 
         //Act
@@ -73,6 +73,23 @@ public class QueryParserTests
             new FilterCondition("column1", "value1", FilterOperator.Equal),
             new FilterCondition("column2", "value2", FilterOperator.NotEqual)
         ]);
+        Assert.Equal(expectedQueryData, queryData);
+    }
+
+    [Fact]
+    public void Parse_ValueWithSpaces_ReturnsCorrectData()
+    {
+        //Arrange
+        Dictionary<string, string[]> rawFilters = new()
+        {
+            {"column", ["eq:value-with-spaces"]}
+        };
+
+        //Act
+        var queryData = QueryParser.Parse(rawFilters);
+
+        //Assert
+        QueryData expectedQueryData = new(0, 20, null, [new("column", "value with spaces", FilterOperator.Equal)]);
         Assert.Equal(expectedQueryData, queryData);
     }
 }

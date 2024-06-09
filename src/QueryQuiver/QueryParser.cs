@@ -5,12 +5,12 @@ public static class QueryParser
 {
     public static QueryData Parse(IDictionary<string, string[]> rawFilters)
     {
-        var offset = GetIntValue(rawFilters, "offset", 0);
-        var limit = GetIntValue(rawFilters, "limit", 20);
+        var page = GetIntValue(rawFilters, "page", 0);
+        var pageSize = GetIntValue(rawFilters, "pageSize", 20);
         var sort = GetSortItem(rawFilters);
         var filterConditions = ParseFilters(rawFilters);
 
-        return new QueryData(offset, limit, sort, filterConditions);
+        return new QueryData(page, pageSize, sort, filterConditions);
     }
 
     private static int GetIntValue(IDictionary<string, string[]> filters, string key, int defaultValue)
