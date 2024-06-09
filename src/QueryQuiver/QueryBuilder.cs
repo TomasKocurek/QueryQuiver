@@ -31,9 +31,15 @@ public static class QueryBuilder
         if (property.Type == typeof(string))
             return Expression.Constant(filter.Value.ToLower());
         else if (property.Type == typeof(decimal))
-            return Expression.Constant(Convert.ToDecimal(filter.Value));
-        else if (property.Type == typeof(IReadOnlyCollection<string>))
-            return Expression.Constant(filter.Value);
+            return Expression.Constant(decimal.Parse(filter.Value));
+        else if (property.Type == typeof(int))
+            return Expression.Constant(int.Parse(filter.Value));
+        else if (property.Type == typeof(long))
+            return Expression.Constant(long.Parse(filter.Value));
+        else if (property.Type == typeof(float))
+            return Expression.Constant(float.Parse(filter.Value));
+        else if (property.Type == typeof(bool))
+            return Expression.Constant(bool.Parse(filter.Value));
         else
             throw new NotImplementedException($"Type {property.Type} is not supported for filtering");
     }
@@ -55,7 +61,7 @@ public static class QueryBuilder
 
     private static Expression CreateProperty(ParameterExpression parameter, FilterCondition filter)
     {
-        Expression property = Expression.Property(parameter, filter.Column);
+        Expression property = Expression.Property(parameter, filter.PropertyName);
         property = ConvertToNonNullable(property);
         property = ConvertToLowerCase(property);
         return property;

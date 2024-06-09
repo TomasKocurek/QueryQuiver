@@ -1,10 +1,10 @@
 ﻿
 namespace QueryQuiver.Contracts;
 
-public class QueryData(int offset, int limit, SortItem? sortItem, IEnumerable<FilterCondition> filters)
+public class QueryData(int page, int pageSize, SortItem? sortItem, IEnumerable<FilterCondition> filters)
 {
-    public int Offset { get; init; } = offset;
-    public int Limit { get; init; } = limit;
+    public int Page { get; init; } = page;
+    public int PageSize { get; init; } = pageSize;
     public SortItem? SortItem { get; init; } = sortItem;
     public IEnumerable<FilterCondition> Filters { get; init; } = filters;
 
@@ -13,12 +13,12 @@ public class QueryData(int offset, int limit, SortItem? sortItem, IEnumerable<Fi
         if (obj is not QueryData other)
             return false;
 
-        return Offset == other.Offset
-            && Limit == other.Limit
+        return Page == other.Page
+            && PageSize == other.PageSize
             && SortItem == other.SortItem
             && Filters.SequenceEqual(other.Filters);
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Offset, Limit, SortItem, Filters);
+        => HashCode.Combine(Page, PageSize, SortItem, Filters);
 }
