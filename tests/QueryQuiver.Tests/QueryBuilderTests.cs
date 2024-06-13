@@ -183,4 +183,23 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
+
+    [Fact]
+    public void Filter_OwnedProperty()
+    {
+        //Arrange
+        var address = dbContext.People.First().Address;
+        List<FilterCondition> filters = [
+            new($"{nameof(PersonEntity.Address)}.{nameof(Address.Country)}", address.Country, FilterOperator.Equal)
+        ];
+
+        //Act
+        var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
+        var result = dbContext.People.Where(query).ToList();
+
+        //Assert
+        var expected = dbContext.People.Where(p => p.Address.Country == address.Country).ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
 }

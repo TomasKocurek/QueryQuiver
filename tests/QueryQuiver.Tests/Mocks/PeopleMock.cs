@@ -4,7 +4,7 @@ using PersonModel = QueryQuiver.Tests.Models.PersonEntity;
 namespace QueryQuiver.Tests.Mocks;
 internal static class PeopleMock
 {
-    public static IEnumerable<PersonModel> Generate(int count = 100)
+    public static List<PersonModel> Generate(int count = 100)
     {
         return new Faker<PersonModel>()
             .RuleFor(p => p.FirstName, f => f.Person.FirstName)

@@ -13,11 +13,13 @@ public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var people = PeopleMock.Generate();
+
         modelBuilder.Entity<PersonEntity>(entity =>
         {
             entity.HasKey(p => p.Id);
-            entity.HasData(PeopleMock.Generate());
-            entity.OwnsOne(p => p.Address);
+            entity.OwnsOne(p => p.Address).HasData(people.Select(p => AddressMock.Generate(p.Id)));
+            entity.HasData(people);
         });
 
         base.OnModelCreating(modelBuilder);
