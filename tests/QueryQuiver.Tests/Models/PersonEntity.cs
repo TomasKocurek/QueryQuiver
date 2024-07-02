@@ -7,5 +7,7 @@ public class PersonEntity
     public int Age { get; set; }
     public string Email { get; set; } = null!;
     public Address Address { get; set; } = null!;
-    public bool IsEmployed { get; set; }
+    public bool GDPR { get; set; }
+    public JobEntity Job { get; set; } = null!;
+    public string JobId { get; set; } = null!;
 }
