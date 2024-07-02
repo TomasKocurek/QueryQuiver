@@ -39,7 +39,17 @@ Format for filter is as follow:
 `{{propertyName}}={{filterOperator}}:{{value}}`  
 `rating=ge:4`
 
-Spaces in value have to be replaced by '-'.
+#### Spaces
+
+You can use spaces in values (use encoding in quqery params)
+
+#### Case sensitivy
+
+Both property names and values are case insensitve
+
+#### Nested/Owned properties
+
+`job.title=eq:Miner`
 
 #### Pagination
 
