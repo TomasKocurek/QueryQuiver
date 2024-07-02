@@ -59,8 +59,7 @@ public static class QueryParser
             throw new ArgumentException($"Invalid filter format: {column}");
 
         var unparsedOperator = parts[0];
-        var unparsedValue = parts[1];
-        var parsedValue = ParseValue(unparsedValue);
+        var value = parts[1];
 
         var filterOperator = unparsedOperator switch
         {
@@ -76,12 +75,6 @@ public static class QueryParser
             _ => throw new ArgumentException($"Invalid filter operator: {parts[1]}")
         };
 
-        return new FilterCondition(column, parsedValue, filterOperator);
-
-        string ParseValue(string unparsedValue)
-        {
-            var words = unparsedValue.Split('-');
-            return string.Join(" ", words);
-        }
+        return new FilterCondition(column, value, filterOperator);
     }
 }
