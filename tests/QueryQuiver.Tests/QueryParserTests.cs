@@ -82,7 +82,7 @@ public class QueryParserTests
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
         {
-            {"column", ["eq:value-with-spaces"]}
+            {"column", ["eq:value with spaces"]}
         };
 
         //Act
