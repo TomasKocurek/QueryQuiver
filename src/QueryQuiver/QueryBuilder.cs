@@ -61,7 +61,8 @@ public static class QueryBuilder
 
     private static Expression CreateProperty(ParameterExpression parameter, FilterCondition filter)
     {
-        Expression property = Expression.Property(parameter, filter.PropertyName);
+        // Split the property name to support nested properties
+        Expression property = CreatePathToProperty(filter.PropertyName);
         property = ConvertToNonNullable(property);
         property = ConvertToLowerCase(property);
         return property;
@@ -81,6 +82,18 @@ public static class QueryBuilder
         {
             var propertyType = Nullable.GetUnderlyingType(property.Type) ?? property.Type;
             return Expression.Convert(property, propertyType);
+        }
+
+        Expression CreatePathToProperty(string propertyName)
+        {
+            string[] parts = filter.PropertyName.Split('.');
+            Expression property = parameter;
+            foreach (var part in parts)
+            {
+                property = Expression.Property(property, part);
+            }
+
+            return property;
         }
     }
 }

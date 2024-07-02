@@ -13,11 +13,31 @@ public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var random = new Random();
+        var jobs = JobMock.Generate().ToList();
+        var people = PeopleMock
+            .Generate()
+            .Select(p =>
+            {
+                int randomIndex = random.Next(jobs.Count);
+                p.JobId = jobs[randomIndex].Id;
+                return p;
+            })
+            .ToList();
+
+        modelBuilder.Entity<JobEntity>(entity =>
+        {
+            entity.HasKey(j => j.Id);
+            entity.HasData(jobs);
+        });
+
         modelBuilder.Entity<PersonEntity>(entity =>
         {
             entity.HasKey(p => p.Id);
-            entity.HasData(PeopleMock.Generate());
-            entity.OwnsOne(p => p.Address);
+            entity.HasOne(p => p.Job).WithMany().HasForeignKey(p => p.JobId);
+
+            entity.OwnsOne(p => p.Address).HasData(people.Select(p => AddressMock.Generate(p.Id)));
+            entity.HasData(people);
         });
 
         base.OnModelCreating(modelBuilder);

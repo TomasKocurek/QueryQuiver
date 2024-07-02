@@ -1,4 +1,5 @@
-﻿using QueryQuiver.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using QueryQuiver.Contracts;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models;
@@ -103,7 +104,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
         var result = dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.FirstName.Contains(name, StringComparison.OrdinalIgnoreCase) && p.Age >= age).ToList();
+        var expected = dbContext.People.Where(p => p.FirstName.Contains(name) && p.Age >= age).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -171,7 +172,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     {
         //Arrange
         List<FilterCondition> filters = [
-            new(nameof(PersonEntity.IsEmployed), "true", FilterOperator.Equal)
+            new(nameof(PersonEntity.GDPR), "true", FilterOperator.Equal)
         ];
 
         //Act
@@ -179,7 +180,47 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
         var result = dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.IsEmployed).ToList();
+        var expected = dbContext.People.Where(p => p.GDPR).ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Filter_OwnedProperty()
+    {
+        //Arrange
+        var address = dbContext.People.First().Address;
+        List<FilterCondition> filters = [
+            new($"{nameof(PersonEntity.Address)}.{nameof(Address.Country)}", address.Country, FilterOperator.Equal)
+        ];
+
+        //Act
+        var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
+        var result = dbContext.People.Where(query).ToList();
+
+        //Assert
+        var expected = dbContext.People.Where(p => p.Address.Country == address.Country).ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Filter_NestedProperty()
+    {
+        //Arrange
+        var job = dbContext.People
+            .Include(p => p.Job)
+            .First().Job;
+        List<FilterCondition> filters = [
+            new($"{nameof(PersonEntity.Job)}.{nameof(JobEntity.Title)}", job.Title, FilterOperator.Equal)
+        ];
+
+        //Act
+        var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
+        var result = dbContext.People.Where(query).ToList();
+
+        //Assert
+        var expected = dbContext.People.Where(p => p.Job.Title == job.Title).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }

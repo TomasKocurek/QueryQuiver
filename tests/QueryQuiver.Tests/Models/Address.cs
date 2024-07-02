@@ -1,2 +1,8 @@
 ﻿namespace QueryQuiver.Tests.Models;
-public record Address(string Number, string Street, string Country);
+public class Address
+{
+    public string Number { get; set; } = null!;
+    public string Street { get; set; } = null!;
+    public string Country { get; set; } = null!;
+    public string PersonEntityId { get; set; } = null!;
+}
