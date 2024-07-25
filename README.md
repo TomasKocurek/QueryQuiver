@@ -27,7 +27,7 @@ All you need to do is to pass query params to extension method `ApplyFilters()`.
 [HttpGet]
 public async Task<ActionResult<IEnumerable<Person>>> GetPeople([FromQuery] IDictionary<string, string[]> filters)
 {
-    return dbContext.People.ApplyFilters(filters).ToListAsync()
+    return Ok(await dbContext.People.ApplyFilters(filters).ToListAsync());
 }
 ```
 
