@@ -49,7 +49,9 @@ Both property names and values are case insensitve
 
 #### Nested/Owned properties
 
-`job.title=eq:Miner`
+For nested properties use `|` to separate path to property
+
+`job|title=eq:Miner`
 
 #### Pagination
 
