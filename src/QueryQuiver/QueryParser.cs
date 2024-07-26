@@ -52,11 +52,13 @@ public static class QueryParser
         return filterConditions;
     }
 
-    private static FilterCondition ParseFilter(string column, string unparsedFilter)
+    private static FilterCondition ParseFilter(string unparsedColumn, string unparsedFilter)
     {
+        var column = unparsedColumn.Replace("|", ".");
+
         var parts = unparsedFilter.Split(':');
         if (parts.Length != 2)
-            throw new ArgumentException($"Invalid filter format: {column}");
+            throw new ArgumentException($"Invalid filter format: {unparsedColumn}");
 
         var unparsedOperator = parts[0];
         var value = parts[1];

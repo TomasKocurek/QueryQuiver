@@ -92,4 +92,21 @@ public class QueryParserTests
         QueryData expectedQueryData = new(0, 20, null, [new("column", "value with spaces", FilterOperator.Equal)]);
         Assert.Equal(expectedQueryData, queryData);
     }
+
+    [Fact]
+    public void Parse_NestedProperties_ReturnsCorrectData()
+    {
+        //Arrange
+        Dictionary<string, string[]> rawFilters = new()
+        {
+            {"nested|property", ["eq:value"]}
+        };
+
+        //Act
+        var queryData = QueryParser.Parse(rawFilters);
+
+        //Assert
+        QueryData expectedQueryData = new(0, 20, null, [new("nested.property", "value", FilterOperator.Equal)]);
+        Assert.Equal(expectedQueryData, queryData);
+    }
 }
