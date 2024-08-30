@@ -51,7 +51,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_GreaterThan()
     {
         //Arrange
-        var age = _dbContext.People.First().Age;
+        var age = _dbContext.People.First().Age - 1;
         List<FilterCondition> filters =
         [
             new(nameof(PersonEntity.Age), age.ToString(), FilterOperator.GreaterThan)

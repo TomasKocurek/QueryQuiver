@@ -16,6 +16,13 @@ public abstract class MappingProfile<TDto, TEntity>
     public string Get(string source)
         => MapDictionary.TryGetValue(source, out var destination) ? destination : source;
 
+    /// <summary>
+    /// Set mapping between properties 
+    /// </summary>
+    /// <typeparam name="TDtoProperty"></typeparam>
+    /// <typeparam name="TEntityProperty"></typeparam>
+    /// <param name="dtoProperty"></param>
+    /// <param name="entityProperty"></param>
     public void MapProperty<TDtoProperty, TEntityProperty>(Expression<Func<TDto, TDtoProperty>> dtoProperty, Expression<Func<TEntity, TEntityProperty>> entityProperty)
     {
         var dtoPropertyPath = GetFullPropertyPath(dtoProperty);

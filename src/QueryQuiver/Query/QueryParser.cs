@@ -1,4 +1,5 @@
 ﻿using QueryQuiver.Contracts;
+using QueryQuiver.Helpers;
 using QueryQuiver.Mapping;
 
 namespace QueryQuiver.Query;
@@ -6,9 +7,9 @@ public static class QueryParser
 {
     public static QueryData Parse<TDto, TEntity>(IDictionary<string, string[]> rawFilters, MappingProfile<TEntity, TDto>? mapProfile = null)
     {
-        var page = GetIntValue(rawFilters, "page", 0);
-        var pageSize = GetIntValue(rawFilters, "pageSize", 20);
-        var sort = GetSortItem(rawFilters);
+        var page = GetIntValue(rawFilters, Constants.PageKey, Constants.DefaultPage);
+        var pageSize = GetIntValue(rawFilters, Constants.PageSizeKey, Constants.DefaultPageSize);
+        var sort = GetSortItem(rawFilters, mapProfile);
         var filterConditions = ParseFilters(rawFilters, mapProfile);
 
         return new QueryData(page, pageSize, sort, filterConditions);
@@ -24,17 +25,18 @@ public static class QueryParser
         return parsedValue;
     }
 
-    private static SortItem? GetSortItem(IDictionary<string, string[]> filters)
+    private static SortItem? GetSortItem<TDto, TEntity>(IDictionary<string, string[]> filters, MappingProfile<TEntity, TDto>? mapProfile)
     {
-        if (!filters.TryGetValue("sort", out var value))
+        if (!filters.TryGetValue(Constants.SortKey, out var value))
             return null;
 
-        var parts = value[0].Split(':');
-        var column = parts[0];
-        bool direction = parts.Length > 1 && parts[1] == "desc";
-        filters.Remove("sort");
+        var (originalColumn, directionValue) = SplitByFirstSeparator(value[0]);
 
-        return new(column, direction);
+        var column = mapProfile?.Get(originalColumn) ?? originalColumn;
+        bool descending = directionValue == Constants.Descending;
+        filters.Remove(Constants.SortKey);
+
+        return new(column, descending);
     }
 
     private static List<FilterCondition> ParseFilters<TDto, TEntity>(IDictionary<string, string[]> filters, MappingProfile<TEntity, TDto>? mapProfile)
@@ -55,14 +57,8 @@ public static class QueryParser
 
     private static FilterCondition ParseFilter(string unparsedColumn, string unparsedFilter)
     {
-        var column = unparsedColumn.Replace("|", ".");
-
-        var separatorIndex = unparsedFilter.IndexOf(':');
-        if (separatorIndex == -1)
-            throw new ArgumentException($"Invalid filter format: {unparsedColumn}");
-
-        var unparsedOperator = unparsedFilter[..separatorIndex];
-        var value = unparsedFilter[(separatorIndex + 1)..];
+        var column = unparsedColumn.Replace(Constants.NestedSeparator, ".");
+        var (unparsedOperator, value) = SplitByFirstSeparator(unparsedFilter);
 
         var filterOperator = unparsedOperator switch
         {
@@ -79,5 +75,17 @@ public static class QueryParser
         };
 
         return new FilterCondition(column, value, filterOperator);
+    }
+
+    private static (string First, string Second) SplitByFirstSeparator(string originalString)
+    {
+        var separatorIndex = originalString.IndexOf(Constants.ValueSeparator);
+        if (separatorIndex == -1)
+            throw new ArgumentException($"Invalid format {originalString}");
+
+        var first = originalString[..separatorIndex];
+        var second = originalString[(separatorIndex + 1)..];
+
+        return (first, second);
     }
 }

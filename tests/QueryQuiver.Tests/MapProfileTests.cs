@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using QueryQuiver.Interfaces;
+using QueryQuiver.Tests.Extensions;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models.Dtos;
@@ -47,5 +48,28 @@ public class MapProfileTests(DbContextFixture DbContextFixture, ServiceProviderF
         // Assert
         Assert.NotEmpty(result.Data);
         Assert.All(result.Data, o => Assert.Equal(email, o.Customer.Email));
+    }
+
+    [Fact]
+    public async Task ExecuteQueryAsync_WithSortMapping_ReutrnsData()
+    {
+        //Arrange
+        Dictionary<string, string[]> rawFilters = new()
+        {
+            {"sort", ["orderPrice:desc"]},
+            {"page", ["0"]},
+            {"pageSize", ["20"] }
+        };
+
+        //Act
+        var result = await _queryService.ExecuteAsync<OrderDto, OrderEntity>(_dbContext.Orders, rawFilters);
+
+        //Assert
+        var expected = _dbContext.Orders
+            .OrderByDescending(o => o.Price)
+            .ApplyPagination(0, 20)
+            .ToList();
+        Assert.NotEmpty(result.Data);
+        Assert.Equal(expected, result.Data);
     }
 }
