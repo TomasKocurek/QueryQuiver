@@ -1,6 +1,6 @@
 ﻿using QueryQuiver.Contracts;
 
-namespace QueryQuiver;
+namespace QueryQuiver.Extensions;
 public static class QueryableExtensions
 {
     [Obsolete($"Use QueryService instead")]

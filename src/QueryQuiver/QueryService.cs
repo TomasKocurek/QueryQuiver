@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueryQuiver.Contracts;
+using QueryQuiver.Extensions;
 
 namespace QueryQuiver;
 public class QueryService<TDto, TEntity>(MapProfile<TDto, TEntity> MapProfile)
