@@ -29,7 +29,7 @@ public abstract class MappingProfile<TDto, TEntity>
         var path = new List<string>();
         Expression expression = selector.Body;
 
-        while (expression is MemberExpression memberExpression)
+        while (expression is MemberExpression memberExpression && memberExpression.Expression is not null)
         {
             path.Insert(0, memberExpression.Member.Name);
             expression = memberExpression.Expression;
