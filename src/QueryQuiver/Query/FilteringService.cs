@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueryQuiver.Contracts;
 using QueryQuiver.Extensions;
+using QueryQuiver.Interfaces;
 using QueryQuiver.Mapping;
 
 namespace QueryQuiver.Query;
-public class QueryService<TDto, TEntity>(MappingProfile<TDto, TEntity> MapProfile)
+internal class FilteringService<TDto, TEntity>(MappingProfile<TDto, TEntity> MapProfile) : IFilteringService<TDto, TEntity>
 {
     public async Task<DataList<TEntity>> ExecuteAsync(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
     {

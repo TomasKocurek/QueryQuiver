@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using QueryQuiver.Query;
+using QueryQuiver.Interfaces;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models.Dtos;
@@ -11,7 +11,7 @@ namespace QueryQuiver.Tests;
 public class MapProfileTests(DbContextFixture DbContextFixture, ServiceProviderFixture ServiceProviderFixture)
 {
     private readonly TestDbContext _dbContext = DbContextFixture.DbContext;
-    private readonly QueryService<OrderDto, OrderEntity> _queryService = ServiceProviderFixture.ServiceProvider.GetRequiredService<QueryService<OrderDto, OrderEntity>>();
+    private readonly IFilteringService<OrderDto, OrderEntity> _queryService = ServiceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService<OrderDto, OrderEntity>>();
 
     [Fact]
     public async Task ExecuteQueryAsync_WithSimpleMapping_ReturnsData()

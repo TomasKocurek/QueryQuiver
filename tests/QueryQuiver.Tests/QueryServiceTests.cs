@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using QueryQuiver.Query;
+using QueryQuiver.Interfaces;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models.Dtos;
@@ -12,7 +12,7 @@ namespace QueryQuiver.Tests;
 public class QueryServiceTests(DbContextFixture DbContextFixture, ServiceProviderFixture serviceProviderFixture)
 {
     private readonly TestDbContext _dbContext = DbContextFixture.DbContext;
-    private readonly QueryService<PersonDto, PersonEntity> _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<QueryService<PersonDto, PersonEntity>>();
+    private readonly IFilteringService<PersonDto, PersonEntity> _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService<PersonDto, PersonEntity>>();
 
     [Fact]
     public async Task ExecuteQueryAsync_WithFilters_ReturnsFilteredData()
