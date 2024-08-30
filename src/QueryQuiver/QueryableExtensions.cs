@@ -3,6 +3,7 @@
 namespace QueryQuiver;
 public static class QueryableExtensions
 {
+    [Obsolete($"Use QueryService instead")]
     public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> query, IDictionary<string, string[]> rawFilters)
     {
         var queryData = QueryParser.Parse(rawFilters);
@@ -15,7 +16,7 @@ public static class QueryableExtensions
             .Take(queryData.PageSize);
     }
 
-    private static IQueryable<T> ApplySort<T>(this IQueryable<T> query, SortItem? sortItem)
+    internal static IQueryable<T> ApplySort<T>(this IQueryable<T> query, SortItem? sortItem)
     {
         if (sortItem is null)
             return query;
@@ -30,6 +31,6 @@ public static class QueryableExtensions
             : query.OrderBy(sortProperty);
     }
 
-    private static IQueryable<T> ApplyPagination<T>(this IQueryable<T> query, QueryData queryData)
+    internal static IQueryable<T> ApplyPagination<T>(this IQueryable<T> query, QueryData queryData)
         => query.Skip(queryData.Page * queryData.PageSize).Take(queryData.PageSize);
 }
