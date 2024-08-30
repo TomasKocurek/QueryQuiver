@@ -12,7 +12,7 @@ namespace QueryQuiver.Tests;
 public class QueryServiceTests(DbContextFixture DbContextFixture, ServiceProviderFixture serviceProviderFixture)
 {
     private readonly TestDbContext _dbContext = DbContextFixture.DbContext;
-    private readonly IFilteringService<PersonDto, PersonEntity> _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService<PersonDto, PersonEntity>>();
+    private readonly IFilteringService _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService>();
 
     [Fact]
     public async Task ExecuteQueryAsync_WithFilters_ReturnsFilteredData()
@@ -27,7 +27,7 @@ public class QueryServiceTests(DbContextFixture DbContextFixture, ServiceProvide
         };
 
         // Act
-        var result = await _queryService.ExecuteAsync(_dbContext.People, rawFilters);
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         // Assert
         Assert.NotEmpty(result.Data);
@@ -49,7 +49,7 @@ public class QueryServiceTests(DbContextFixture DbContextFixture, ServiceProvide
         };
 
         // Act
-        var result = _queryService.Execute(_dbContext.People, rawFilters);
+        var result = _queryService.Execute<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         // Assert
         Assert.NotEmpty(result.Data);

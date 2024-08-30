@@ -12,7 +12,7 @@ namespace QueryQuiver.Tests;
 public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderFixture serviceProviderFixture)
 {
     private readonly TestDbContext _dbContext = dbContextFixture.DbContext;
-    private readonly IFilteringService<PersonDto, PersonEntity> _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService<PersonDto, PersonEntity>>();
+    private readonly IFilteringService _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService>();
 
 
     [Fact]
@@ -22,7 +22,7 @@ public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderF
         Dictionary<string, string[]> rawFilters = [];
 
         //Act
-        var result = await _queryService.ExecuteAsync(_dbContext.People, rawFilters);
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
         var expected = _dbContext.People
@@ -43,7 +43,7 @@ public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderF
         };
 
         //Act
-        var result = await _queryService.ExecuteAsync(_dbContext.People, rawFilters);
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
         var expected = _dbContext.People
@@ -65,7 +65,7 @@ public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderF
         };
 
         //Act
-        var result = await _queryService.ExecuteAsync(_dbContext.People, rawFilters);
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
         var expected = _dbContext.People
@@ -88,7 +88,7 @@ public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderF
         };
 
         //Act
-        var result = await _queryService.ExecuteAsync(_dbContext.People, rawFilters);
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
         var expected = _dbContext.People

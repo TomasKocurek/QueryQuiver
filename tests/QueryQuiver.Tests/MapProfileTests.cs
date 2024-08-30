@@ -11,7 +11,7 @@ namespace QueryQuiver.Tests;
 public class MapProfileTests(DbContextFixture DbContextFixture, ServiceProviderFixture ServiceProviderFixture)
 {
     private readonly TestDbContext _dbContext = DbContextFixture.DbContext;
-    private readonly IFilteringService<OrderDto, OrderEntity> _queryService = ServiceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService<OrderDto, OrderEntity>>();
+    private readonly IFilteringService _queryService = ServiceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService>();
 
     [Fact]
     public async Task ExecuteQueryAsync_WithSimpleMapping_ReturnsData()
@@ -24,7 +24,7 @@ public class MapProfileTests(DbContextFixture DbContextFixture, ServiceProviderF
         };
 
         // Act
-        var result = await _queryService.ExecuteAsync(_dbContext.Orders, rawFilters);
+        var result = await _queryService.ExecuteAsync<OrderDto, OrderEntity>(_dbContext.Orders, rawFilters);
 
         // Assert
         Assert.NotEmpty(result.Data);
@@ -42,7 +42,7 @@ public class MapProfileTests(DbContextFixture DbContextFixture, ServiceProviderF
         };
 
         // Act
-        var result = await _queryService.ExecuteAsync(_dbContext.Orders.Include(o => o.Customer), rawFilters);
+        var result = await _queryService.ExecuteAsync<OrderDto, OrderEntity>(_dbContext.Orders.Include(o => o.Customer), rawFilters);
 
         // Assert
         Assert.NotEmpty(result.Data);

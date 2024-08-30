@@ -10,7 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddQueryQuiver(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IFilteringService<,>), typeof(FilteringService<,>));
+        services.AddScoped<IFilteringService, FilteringService>();
         return services;
     }
 

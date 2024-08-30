@@ -1,37 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using QueryQuiver.Contracts;
 using QueryQuiver.Extensions;
 using QueryQuiver.Interfaces;
 using QueryQuiver.Mapping;
 
 namespace QueryQuiver.Query;
-internal class FilteringService<TDto, TEntity>(MappingProfile<TDto, TEntity> MapProfile) : IFilteringService<TDto, TEntity>
+internal class FilteringService(IServiceProvider ServiceProvider) : IFilteringService
 {
-    public async Task<DataList<TEntity>> ExecuteAsync(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
+    public DataList<TEntity> Execute<TDto, TEntity>(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
     {
-        var queryData = QueryParser.Parse(rawFilters, MapProfile);
-        var filters = QueryBuilder.BuildQuery<TEntity>(queryData.Filters);
-
-        var queryWithFilters = query.Where(filters);
-        var totalCount = await queryWithFilters.CountAsync();
-
-        var result = await queryWithFilters
-            .ApplySort(queryData.SortItem)
-            .ApplyPagination(queryData)
-            .ToListAsync();
-
-        return new()
-        {
-            Page = queryData.Page,
-            PageSize = queryData.PageSize,
-            TotalCount = totalCount,
-            Data = result
-        };
-    }
-
-    public DataList<TEntity> Execute(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
-    {
-        var queryData = QueryParser.Parse(rawFilters, MapProfile);
+        var mappingProfile = ServiceProvider.GetService<MappingProfile<TDto, TEntity>>();
+        var queryData = QueryParser.Parse(rawFilters, mappingProfile);
         var filters = QueryBuilder.BuildQuery<TEntity>(queryData.Filters);
 
         var queryWithFilters = query.Where(filters);
@@ -50,4 +30,28 @@ internal class FilteringService<TDto, TEntity>(MappingProfile<TDto, TEntity> Map
             Data = result
         };
     }
+
+    public async Task<DataList<TEntity>> ExecuteAsync<TDto, TEntity>(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
+    {
+        var mappingProfile = ServiceProvider.GetService<MappingProfile<TDto, TEntity>>();
+        var queryData = QueryParser.Parse(rawFilters, mappingProfile);
+        var filters = QueryBuilder.BuildQuery<TEntity>(queryData.Filters);
+
+        var queryWithFilters = query.Where(filters);
+        var totalCount = await queryWithFilters.CountAsync();
+
+        var result = await queryWithFilters
+            .ApplySort(queryData.SortItem)
+            .ApplyPagination(queryData)
+            .ToListAsync();
+
+        return new()
+        {
+            Page = queryData.Page,
+            PageSize = queryData.PageSize,
+            TotalCount = totalCount,
+            Data = result
+        };
+    }
 }
+
