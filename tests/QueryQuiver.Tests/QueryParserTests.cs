@@ -1,4 +1,5 @@
 using QueryQuiver.Contracts;
+using QueryQuiver.Query;
 
 namespace QueryQuiver.Tests;
 

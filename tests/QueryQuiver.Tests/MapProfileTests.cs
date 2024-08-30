@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using QueryQuiver.Query;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models.Dtos;

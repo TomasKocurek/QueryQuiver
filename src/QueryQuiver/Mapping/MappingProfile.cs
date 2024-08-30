@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace QueryQuiver;
+namespace QueryQuiver.Mapping;
 /// <summary>
 /// Abstract class, for creating mapping for properties
 /// </summary>

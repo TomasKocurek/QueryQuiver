@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueryQuiver.Contracts;
+using QueryQuiver.Query;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models.Entities;

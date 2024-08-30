@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using QueryQuiver.Mapping;
 using QueryQuiver.Tests.Models.Dtos;
 using QueryQuiver.Tests.Models.Entities;
 using QueryQuiver.Tests.Profiles;

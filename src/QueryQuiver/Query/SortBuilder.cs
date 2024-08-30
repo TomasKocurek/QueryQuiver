@@ -1,7 +1,7 @@
 ﻿using QueryQuiver.Contracts;
 using System.Linq.Expressions;
 
-namespace QueryQuiver;
+namespace QueryQuiver.Query;
 public static class SortBuilder
 {
     public static Expression<Func<T, object>>? CreateSortProperty<T>(SortItem? sortItem)

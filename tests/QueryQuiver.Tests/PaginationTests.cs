@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using QueryQuiver.Query;
 using QueryQuiver.Tests.Extensions;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;

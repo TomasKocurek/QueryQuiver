@@ -1,6 +1,7 @@
 ﻿using QueryQuiver.Contracts;
+using QueryQuiver.Mapping;
 
-namespace QueryQuiver;
+namespace QueryQuiver.Query;
 public static class QueryParser
 {
     public static QueryData Parse<TDto, TEntity>(IDictionary<string, string[]> rawFilters, MappingProfile<TEntity, TDto>? mapProfile = null)
