@@ -3,7 +3,7 @@ using QueryQuiver.Contracts;
 using QueryQuiver.Extensions;
 
 namespace QueryQuiver;
-public class QueryService<TDto, TEntity>(MapProfile<TDto, TEntity> MapProfile)
+public class QueryService<TDto, TEntity>(MappingProfile<TDto, TEntity> MapProfile)
 {
     public async Task<DataList<TEntity>> ExecuteAsync(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
     {

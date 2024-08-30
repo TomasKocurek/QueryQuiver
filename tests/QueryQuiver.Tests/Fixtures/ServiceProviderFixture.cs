@@ -12,8 +12,8 @@ public class ServiceProviderFixture
     {
         var services = new ServiceCollection();
 
-        services.AddSingleton<MapProfile<PersonDto, PersonEntity>>(new PersonTestProfile());
-        services.AddSingleton<MapProfile<OrderDto, OrderEntity>>(new OrderTestProfile());
+        services.AddSingleton<MappingProfile<PersonDto, PersonEntity>>(new PersonTestProfile());
+        services.AddSingleton<MappingProfile<OrderDto, OrderEntity>>(new OrderTestProfile());
         services.AddQueryQuiver();
 
         ServiceProvider = services.BuildServiceProvider();

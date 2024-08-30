@@ -3,7 +3,7 @@
 namespace QueryQuiver;
 public static class QueryParser
 {
-    public static QueryData Parse<TDto, TEntity>(IDictionary<string, string[]> rawFilters, MapProfile<TEntity, TDto>? mapProfile = null)
+    public static QueryData Parse<TDto, TEntity>(IDictionary<string, string[]> rawFilters, MappingProfile<TEntity, TDto>? mapProfile = null)
     {
         var page = GetIntValue(rawFilters, "page", 0);
         var pageSize = GetIntValue(rawFilters, "pageSize", 20);
@@ -36,7 +36,7 @@ public static class QueryParser
         return new(column, direction);
     }
 
-    private static List<FilterCondition> ParseFilters<TDto, TEntity>(IDictionary<string, string[]> filters, MapProfile<TEntity, TDto>? mapProfile)
+    private static List<FilterCondition> ParseFilters<TDto, TEntity>(IDictionary<string, string[]> filters, MappingProfile<TEntity, TDto>? mapProfile)
     {
         var filterConditions = new List<FilterCondition>();
         foreach (var filter in filters)

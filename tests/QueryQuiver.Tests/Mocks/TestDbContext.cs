@@ -26,6 +26,15 @@ public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(
                 return p;
             })
             .ToList();
+        var orders = OrderMock
+            .Generate()
+            .Select(o =>
+            {
+                int randomIndex = random.Next(people.Count);
+                o.CustomerId = people[randomIndex].Id;
+                return o;
+            })
+            .ToList();
 
         modelBuilder.Entity<JobEntity>(entity =>
         {
@@ -45,7 +54,9 @@ public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(
         modelBuilder.Entity<OrderEntity>(entity =>
         {
             entity.HasKey(o => o.Id);
-            entity.HasData(OrderMock.Generate());
+            entity.HasOne(o => o.Customer).WithMany().HasForeignKey(o => o.CustomerId);
+
+            entity.HasData(orders);
         });
 
         base.OnModelCreating(modelBuilder);
