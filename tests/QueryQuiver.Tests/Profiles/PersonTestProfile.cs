@@ -1,6 +1,7 @@
-﻿using QueryQuiver.Tests.Models;
+﻿using QueryQuiver.Tests.Models.Dtos;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests.Profiles;
-public class PersonTestProfile : MapProfile<PersonEntity, PersonEntity>
+internal class PersonTestProfile : MapProfile<PersonDto, PersonEntity>
 {
 }

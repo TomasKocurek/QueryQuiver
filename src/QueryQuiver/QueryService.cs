@@ -2,11 +2,11 @@
 using QueryQuiver.Contracts;
 
 namespace QueryQuiver;
-public class QueryService<TSource, TEntity>(MapProfile<TSource, TEntity> MapProfile)
+public class QueryService<TDto, TEntity>(MapProfile<TDto, TEntity> MapProfile)
 {
     public async Task<DataList<TEntity>> ExecuteAsync(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
     {
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse(rawFilters, MapProfile);
         var filters = QueryBuilder.BuildQuery<TEntity>(queryData.Filters);
 
         var queryWithFilters = query.Where(filters);
@@ -28,7 +28,7 @@ public class QueryService<TSource, TEntity>(MapProfile<TSource, TEntity> MapProf
 
     public DataList<TEntity> Execute(IQueryable<TEntity> query, IDictionary<string, string[]> rawFilters)
     {
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse(rawFilters, MapProfile);
         var filters = QueryBuilder.BuildQuery<TEntity>(queryData.Filters);
 
         var queryWithFilters = query.Where(filters);

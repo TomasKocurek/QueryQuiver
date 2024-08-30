@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using PersonModel = QueryQuiver.Tests.Models.PersonEntity;
+using PersonModel = QueryQuiver.Tests.Models.Entities.PersonEntity;
 
 namespace QueryQuiver.Tests.Mocks;
 internal static class PeopleMock

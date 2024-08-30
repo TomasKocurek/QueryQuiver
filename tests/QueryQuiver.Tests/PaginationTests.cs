@@ -2,7 +2,8 @@
 using QueryQuiver.Tests.Extensions;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
-using QueryQuiver.Tests.Models;
+using QueryQuiver.Tests.Models.Dtos;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests;
 
@@ -10,7 +11,7 @@ namespace QueryQuiver.Tests;
 public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderFixture serviceProviderFixture)
 {
     private readonly TestDbContext _dbContext = dbContextFixture.DbContext;
-    private readonly QueryService<PersonEntity, PersonEntity> _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<QueryService<PersonEntity, PersonEntity>>();
+    private readonly QueryService<PersonDto, PersonEntity> _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<QueryService<PersonDto, PersonEntity>>();
 
 
     [Fact]

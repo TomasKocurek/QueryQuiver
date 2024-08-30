@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QueryQuiver.Tests.Models;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests.Mocks;
 public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
     public DbSet<PersonEntity> People => Set<PersonEntity>();
+    public DbSet<JobEntity> Jobs => Set<JobEntity>();
+    public DbSet<OrderEntity> Orders => Set<OrderEntity>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -38,6 +40,12 @@ public class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(
 
             entity.OwnsOne(p => p.Address).HasData(people.Select(p => AddressMock.Generate(p.Id)));
             entity.HasData(people);
+        });
+
+        modelBuilder.Entity<OrderEntity>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+            entity.HasData(OrderMock.Generate());
         });
 
         base.OnModelCreating(modelBuilder);

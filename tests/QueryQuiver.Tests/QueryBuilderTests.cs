@@ -2,7 +2,7 @@
 using QueryQuiver.Contracts;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
-using QueryQuiver.Tests.Models;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests;
 [Collection(nameof(QueryQuiverCollection))]

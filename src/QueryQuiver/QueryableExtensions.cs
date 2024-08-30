@@ -6,7 +6,7 @@ public static class QueryableExtensions
     [Obsolete($"Use QueryService instead")]
     public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> query, IDictionary<string, string[]> rawFilters)
     {
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<T, T>(rawFilters);
         var filters = QueryBuilder.BuildQuery<T>(queryData.Filters);
 
         return query

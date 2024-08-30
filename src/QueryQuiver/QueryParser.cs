@@ -3,12 +3,12 @@
 namespace QueryQuiver;
 public static class QueryParser
 {
-    public static QueryData Parse(IDictionary<string, string[]> rawFilters)
+    public static QueryData Parse<TDto, TEntity>(IDictionary<string, string[]> rawFilters, MapProfile<TEntity, TDto>? mapProfile = null)
     {
         var page = GetIntValue(rawFilters, "page", 0);
         var pageSize = GetIntValue(rawFilters, "pageSize", 20);
         var sort = GetSortItem(rawFilters);
-        var filterConditions = ParseFilters(rawFilters);
+        var filterConditions = ParseFilters(rawFilters, mapProfile);
 
         return new QueryData(page, pageSize, sort, filterConditions);
     }
@@ -36,12 +36,12 @@ public static class QueryParser
         return new(column, direction);
     }
 
-    private static List<FilterCondition> ParseFilters(IDictionary<string, string[]> filters)
+    private static List<FilterCondition> ParseFilters<TDto, TEntity>(IDictionary<string, string[]> filters, MapProfile<TEntity, TDto>? mapProfile)
     {
         var filterConditions = new List<FilterCondition>();
         foreach (var filter in filters)
         {
-            var column = filter.Key;
+            var column = mapProfile?.Get(filter.Key) ?? filter.Key;
             foreach (var value in filter.Value)
             {
                 var filterCondition = ParseFilter(column, value);
@@ -56,12 +56,12 @@ public static class QueryParser
     {
         var column = unparsedColumn.Replace("|", ".");
 
-        var parts = unparsedFilter.Split(':');
-        if (parts.Length != 2)
+        var separatorIndex = unparsedFilter.IndexOf(':');
+        if (separatorIndex == -1)
             throw new ArgumentException($"Invalid filter format: {unparsedColumn}");
 
-        var unparsedOperator = parts[0];
-        var value = parts[1];
+        var unparsedOperator = unparsedFilter[..separatorIndex];
+        var value = unparsedFilter[(separatorIndex + 1)..];
 
         var filterOperator = unparsedOperator switch
         {
@@ -74,7 +74,7 @@ public static class QueryParser
             "ct" => FilterOperator.Contains,
             "sw" => FilterOperator.StartsWith,
             "ew" => FilterOperator.EndsWith,
-            _ => throw new ArgumentException($"Invalid filter operator: {parts[1]}")
+            _ => throw new ArgumentException($"Invalid filter operator: {value}")
         };
 
         return new FilterCondition(column, value, filterOperator);

@@ -8,10 +8,10 @@ public class QueryParserTests
     public void Parse_EmptyDictionary_ReturnsEmptyData()
     {
         //Arrange
-        Dictionary<string, string[]> rawFilters = new();
+        Dictionary<string, string[]> rawFilters = [];
 
         //Act
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<object, object>(rawFilters);
 
         //Assert
         QueryData expectedQueryData = new(0, 20, null, []);
@@ -31,7 +31,7 @@ public class QueryParserTests
         };
 
         //Act
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<object, object>(rawFilters);
 
         //Assert
         QueryData expectedQueryData = new(10, 30, new SortItem("column", true), [new("column", "value", FilterOperator.Equal)]);
@@ -48,7 +48,7 @@ public class QueryParserTests
         };
 
         //Act
-        void Act() => QueryParser.Parse(rawFilters);
+        void Act() => QueryParser.Parse<object, object>(rawFilters);
 
         //Assert
         Assert.Throws<ArgumentException>(Act);
@@ -65,7 +65,7 @@ public class QueryParserTests
         };
 
         //Act
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<object, object>(rawFilters);
 
         //Assert
         QueryData expectedQueryData = new(0, 20, null,
@@ -86,7 +86,7 @@ public class QueryParserTests
         };
 
         //Act
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<object, object>(rawFilters);
 
         //Assert
         QueryData expectedQueryData = new(0, 20, null, [new("column", "value with spaces", FilterOperator.Equal)]);
@@ -103,7 +103,7 @@ public class QueryParserTests
         };
 
         //Act
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<object, object>(rawFilters);
 
         //Assert
         QueryData expectedQueryData = new(0, 20, null, [new("nested.property", "value", FilterOperator.Equal)]);
