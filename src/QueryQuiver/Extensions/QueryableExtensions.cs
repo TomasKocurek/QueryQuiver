@@ -1,11 +1,13 @@
 ﻿using QueryQuiver.Contracts;
+using QueryQuiver.Query;
 
-namespace QueryQuiver;
+namespace QueryQuiver.Extensions;
 public static class QueryableExtensions
 {
+    [Obsolete($"Use QueryService instead")]
     public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> query, IDictionary<string, string[]> rawFilters)
     {
-        var queryData = QueryParser.Parse(rawFilters);
+        var queryData = QueryParser.Parse<T, T>(rawFilters);
         var filters = QueryBuilder.BuildQuery<T>(queryData.Filters);
 
         return query
@@ -15,7 +17,7 @@ public static class QueryableExtensions
             .Take(queryData.PageSize);
     }
 
-    private static IQueryable<T> ApplySort<T>(this IQueryable<T> query, SortItem? sortItem)
+    internal static IQueryable<T> ApplySort<T>(this IQueryable<T> query, SortItem? sortItem)
     {
         if (sortItem is null)
             return query;
@@ -30,6 +32,6 @@ public static class QueryableExtensions
             : query.OrderBy(sortProperty);
     }
 
-    private static IQueryable<T> ApplyPagination<T>(this IQueryable<T> query, QueryData queryData)
+    internal static IQueryable<T> ApplyPagination<T>(this IQueryable<T> query, QueryData queryData)
         => query.Skip(queryData.Page * queryData.PageSize).Take(queryData.PageSize);
 }

@@ -1,7 +1,7 @@
 ﻿using QueryQuiver.Contracts;
 using System.Linq.Expressions;
 
-namespace QueryQuiver;
+namespace QueryQuiver.Query;
 
 public static class QueryBuilder
 {

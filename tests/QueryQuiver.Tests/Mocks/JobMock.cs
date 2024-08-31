@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using QueryQuiver.Tests.Models;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests.Mocks;
 internal static class JobMock

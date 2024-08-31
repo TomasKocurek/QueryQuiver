@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QueryQuiver.Contracts;
+using QueryQuiver.Query;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
-using QueryQuiver.Tests.Models;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests;
-[Collection(nameof(DbContextCollection))]
+[Collection(nameof(QueryQuiverCollection))]
 public class QueryBuilderTests(DbContextFixture dbContextFixture)
 {
-    TestDbContext dbContext => dbContextFixture.DbContext;
+    private readonly TestDbContext _dbContext = dbContextFixture.DbContext;
 
     [Fact]
     public void Filter_NoFilter_ReturnsAll()
@@ -18,10 +19,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.ToList();
+        var expected = _dbContext.People.ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -30,7 +31,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_Equal()
     {
         //Arrange
-        var name = dbContext.People.First().FirstName;
+        var name = _dbContext.People.First().FirstName;
         List<FilterCondition> filters =
         [
             new(nameof(PersonEntity.FirstName), name, FilterOperator.Equal)
@@ -38,10 +39,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.FirstName == name).ToList();
+        var expected = _dbContext.People.Where(p => p.FirstName == name).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -50,7 +51,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_GreaterThan()
     {
         //Arrange
-        var age = dbContext.People.First().Age;
+        var age = _dbContext.People.First().Age - 1;
         List<FilterCondition> filters =
         [
             new(nameof(PersonEntity.Age), age.ToString(), FilterOperator.GreaterThan)
@@ -58,10 +59,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.Age > age).ToList();
+        var expected = _dbContext.People.Where(p => p.Age > age).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -70,7 +71,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_StringContains()
     {
         //Act
-        var filterValue = dbContext.People.First().LastName.Substring(1, 2);
+        var filterValue = _dbContext.People.First().LastName.Substring(1, 2);
         List<FilterCondition> filters =
         [
             new(nameof(PersonEntity.LastName), filterValue, FilterOperator.Contains)
@@ -78,10 +79,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.LastName.Contains(filterValue)).ToList();
+        var expected = _dbContext.People.Where(p => p.LastName.Contains(filterValue)).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -90,7 +91,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_CompositeFilter()
     {
         //Act
-        var person = dbContext.People.First();
+        var person = _dbContext.People.First();
         var name = person.FirstName[..2];
         var age = person.Age;
         List<FilterCondition> filters =
@@ -101,10 +102,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.FirstName.Contains(name) && p.Age >= age).ToList();
+        var expected = _dbContext.People.Where(p => p.FirstName.Contains(name) && p.Age >= age).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -113,7 +114,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_NumericRange()
     {
         //Act
-        var minAge = dbContext.People.First().Age;
+        var minAge = _dbContext.People.First().Age;
         var maxAge = minAge + 20;
         List<FilterCondition> filters =
         [
@@ -123,10 +124,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.Age >= minAge && p.Age <= maxAge).ToList();
+        var expected = _dbContext.People.Where(p => p.Age >= minAge && p.Age <= maxAge).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -135,7 +136,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_CaseInsensitive()
     {
         //Act
-        var name = dbContext.People.First().FirstName;
+        var name = _dbContext.People.First().FirstName;
         List<FilterCondition> filters =
         [
             new(nameof(PersonEntity.FirstName), name.ToUpper(), FilterOperator.Equal)
@@ -143,10 +144,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.FirstName == name).ToList();
+        var expected = _dbContext.People.Where(p => p.FirstName == name).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -177,10 +178,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.GDPR).ToList();
+        var expected = _dbContext.People.Where(p => p.GDPR).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -189,17 +190,17 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_OwnedProperty()
     {
         //Arrange
-        var address = dbContext.People.First().Address;
+        var address = _dbContext.People.First().Address;
         List<FilterCondition> filters = [
             new($"{nameof(PersonEntity.Address)}.{nameof(Address.Country)}", address.Country, FilterOperator.Equal)
         ];
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.Address.Country == address.Country).ToList();
+        var expected = _dbContext.People.Where(p => p.Address.Country == address.Country).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }
@@ -208,7 +209,7 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
     public void Filter_NestedProperty()
     {
         //Arrange
-        var job = dbContext.People
+        var job = _dbContext.People
             .Include(p => p.Job)
             .First().Job;
         List<FilterCondition> filters = [
@@ -217,10 +218,10 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Act
         var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
-        var result = dbContext.People.Where(query).ToList();
+        var result = _dbContext.People.Where(query).ToList();
 
         //Assert
-        var expected = dbContext.People.Where(p => p.Job.Title == job.Title).ToList();
+        var expected = _dbContext.People.Where(p => p.Job.Title == job.Title).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }

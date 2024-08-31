@@ -1,4 +1,4 @@
-﻿namespace QueryQuiver.Tests.Models;
+﻿namespace QueryQuiver.Tests.Models.Entities;
 public class Address
 {
     public string Number { get; set; } = null!;

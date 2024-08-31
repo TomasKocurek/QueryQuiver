@@ -1,33 +1,39 @@
-﻿using QueryQuiver.Tests.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using QueryQuiver.Interfaces;
+using QueryQuiver.Tests.Extensions;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
+using QueryQuiver.Tests.Models.Dtos;
+using QueryQuiver.Tests.Models.Entities;
 
 namespace QueryQuiver.Tests;
 
-[Collection(nameof(DbContextCollection))]
-public class PaginationTests(DbContextFixture dbContextFixture)
+[Collection(nameof(QueryQuiverCollection))]
+public class PaginationTests(DbContextFixture dbContextFixture, ServiceProviderFixture serviceProviderFixture)
 {
-    TestDbContext dbContext => dbContextFixture.DbContext;
+    private readonly TestDbContext _dbContext = dbContextFixture.DbContext;
+    private readonly IFilteringService _queryService = serviceProviderFixture.ServiceProvider.GetRequiredService<IFilteringService>();
+
 
     [Fact]
-    public void Paginate_NoPagination_ReturnsDefault()
+    public async Task Paginate_NoPagination_ReturnsDefault()
     {
         //Arrange
         Dictionary<string, string[]> rawFilters = [];
 
         //Act
-        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
-        var expected = dbContext.People
+        var expected = _dbContext.People
             .ApplyPagination(0, 20)
             .ToList();
-        Assert.Equal(expected, result);
-        Assert.NotEmpty(result);
+        Assert.Equal(expected, result.Data);
+        Assert.NotEmpty(result.Data);
     }
 
     [Fact]
-    public void Paginate_WithPagination()
+    public async Task Paginate_WithPagination()
     {
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
@@ -37,18 +43,18 @@ public class PaginationTests(DbContextFixture dbContextFixture)
         };
 
         //Act
-        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
-        var expected = dbContext.People
+        var expected = _dbContext.People
             .ApplyPagination(1, 10)
             .ToList();
-        Assert.Equal(expected, result);
-        Assert.NotEmpty(result);
+        Assert.Equal(expected, result.Data);
+        Assert.NotEmpty(result.Data);
     }
 
     [Fact]
-    public void Paginate_WithPaginationAndDescSort()
+    public async Task Paginate_WithPaginationAndDescSort()
     {
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
@@ -59,19 +65,19 @@ public class PaginationTests(DbContextFixture dbContextFixture)
         };
 
         //Act
-        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
-        var expected = dbContext.People
+        var expected = _dbContext.People
             .OrderByDescending(p => p.LastName)
             .ApplyPagination(1, 10)
             .ToList();
-        Assert.Equal(expected, result);
-        Assert.NotEmpty(result);
+        Assert.Equal(expected, result.Data);
+        Assert.NotEmpty(result.Data);
     }
 
     [Fact]
-    public void Paginate_WithPaginationAndAscSort()
+    public async Task Paginate_WithPaginationAndAscSort()
     {
         //Arrange
         Dictionary<string, string[]> rawFilters = new()
@@ -82,14 +88,14 @@ public class PaginationTests(DbContextFixture dbContextFixture)
         };
 
         //Act
-        var result = dbContext.People.ApplyFilters(rawFilters).ToList();
+        var result = await _queryService.ExecuteAsync<PersonDto, PersonEntity>(_dbContext.People, rawFilters);
 
         //Assert
-        var expected = dbContext.People
+        var expected = _dbContext.People
             .OrderBy(p => p.Age)
             .ApplyPagination(3, 30)
             .ToList();
-        Assert.Equal(expected, result);
-        Assert.NotEmpty(result);
+        Assert.Equal(expected, result.Data);
+        Assert.NotEmpty(result.Data);
     }
 }

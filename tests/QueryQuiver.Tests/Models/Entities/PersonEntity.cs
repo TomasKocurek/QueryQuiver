@@ -1,4 +1,4 @@
-﻿namespace QueryQuiver.Tests.Models;
+﻿namespace QueryQuiver.Tests.Models.Entities;
 public class PersonEntity
 {
     public string Id { get; } = Guid.NewGuid().ToString();
