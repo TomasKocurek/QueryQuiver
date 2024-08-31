@@ -44,6 +44,13 @@ The service is returning DataList with filtered results. Service is returning da
 Service supports both sync and async methods. 
 Types parametrs of methods are used to retrive mapping profile (if exists)
 
+### Dependency Injection
+
+To use IFilteringService you have to register in via AddQueryQuiver() method. 
+If you want to use mapping profiles you have to register via AddMappingProfiles() and pass assembly where profiles are located.
+
+```C#
+
 ### Request
 
 Data are passed as query params in request. Those property names should match property names/paths in your dto model.
