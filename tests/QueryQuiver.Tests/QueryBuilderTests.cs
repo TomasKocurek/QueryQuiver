@@ -4,6 +4,7 @@ using QueryQuiver.Query;
 using QueryQuiver.Tests.Fixtures;
 using QueryQuiver.Tests.Mocks;
 using QueryQuiver.Tests.Models.Entities;
+using QueryQuiver.Tests.Models.Enums;
 
 namespace QueryQuiver.Tests;
 [Collection(nameof(QueryQuiverCollection))]
@@ -222,6 +223,42 @@ public class QueryBuilderTests(DbContextFixture dbContextFixture)
 
         //Assert
         var expected = _dbContext.People.Where(p => p.Job.Title == job.Title).ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Filter_IntEnum()
+    {
+        //Arrange 
+        List<FilterCondition> filters = [
+            new(nameof(PersonEntity.Status), ((int)Status.Active).ToString(), FilterOperator.Equal)
+        ];
+
+        //Act
+        var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
+        var result = _dbContext.People.Where(query).ToList();
+
+        //Assert
+        var expected = _dbContext.People.Where(p => p.Status == Status.Active).ToList();
+        Assert.Equal(expected, result);
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void Filter_StringEnum()
+    {
+        //Arrange 
+        List<FilterCondition> filters = [
+            new(nameof(PersonEntity.Status), nameof(Status.Active), FilterOperator.Equal)
+        ];
+
+        //Act
+        var query = QueryBuilder.BuildQuery<PersonEntity>(filters);
+        var result = _dbContext.People.Where(query).ToList();
+
+        //Assert
+        var expected = _dbContext.People.Where(p => p.Status == Status.Active).ToList();
         Assert.Equal(expected, result);
         Assert.NotEmpty(result);
     }

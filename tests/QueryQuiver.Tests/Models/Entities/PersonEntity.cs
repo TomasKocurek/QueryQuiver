@@ -1,4 +1,6 @@
-﻿namespace QueryQuiver.Tests.Models.Entities;
+﻿using QueryQuiver.Tests.Models.Enums;
+
+namespace QueryQuiver.Tests.Models.Entities;
 public class PersonEntity
 {
     public string Id { get; } = Guid.NewGuid().ToString();
@@ -10,4 +12,5 @@ public class PersonEntity
     public bool GDPR { get; set; }
     public JobEntity Job { get; set; } = null!;
     public string JobId { get; set; } = null!;
+    public Status Status { get; set; }
 }
