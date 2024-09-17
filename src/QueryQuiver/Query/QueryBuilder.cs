@@ -40,6 +40,8 @@ public static class QueryBuilder
             return Expression.Constant(float.Parse(filter.Value));
         else if (property.Type == typeof(bool))
             return Expression.Constant(bool.Parse(filter.Value));
+        else if (property.Type.IsEnum)
+            return Expression.Constant(Enum.Parse(property.Type, filter.Value));
         else
             throw new NotImplementedException($"Type {property.Type} is not supported for filtering");
     }
@@ -62,12 +64,12 @@ public static class QueryBuilder
     private static Expression CreateProperty(ParameterExpression parameter, FilterCondition filter)
     {
         // Split the property name to support nested properties
-        Expression property = CreatePathToProperty(filter.PropertyName);
-        property = ConvertToNonNullable(property);
-        property = ConvertToLowerCase(property);
+        Expression property = CreatePathToProperty();
+        property = ConvertToNonNullable();
+        property = ConvertToLowerCase();
         return property;
 
-        Expression ConvertToLowerCase(Expression property)
+        Expression ConvertToLowerCase()
         {
             if (property.Type == typeof(string))
             {
@@ -78,13 +80,13 @@ public static class QueryBuilder
             return property;
         }
 
-        Expression ConvertToNonNullable(Expression property)
+        Expression ConvertToNonNullable()
         {
             var propertyType = Nullable.GetUnderlyingType(property.Type) ?? property.Type;
             return Expression.Convert(property, propertyType);
         }
 
-        Expression CreatePathToProperty(string propertyName)
+        Expression CreatePathToProperty()
         {
             string[] parts = filter.PropertyName.Split('.');
             Expression property = parameter;
